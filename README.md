@@ -1,6 +1,7 @@
 iwas
 ====
 
+```java
   IWas.create()
     .load(new FileInputStream(INPUT_FILE))
     .offset(30f, 700f)
@@ -12,4 +13,8 @@ iwas
     .text("f_728", 8, 0f, 0f)
     .datamatrix("c_f728#201300007719#673dfc1792", DatamatrixSize._22x22, 75f, 15f, 1.6f)
     .toStream(new FileOutputStream(OUTPUT_FILE));
+```
 
+Output pdf watermark:
+
+![Alt text](../../blob/develop/sample-output.png?raw=true "Sample output")
