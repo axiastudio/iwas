@@ -15,6 +15,6 @@ iwas
     .toStream(new FileOutputStream(OUTPUT_FILE));
 ```
 
-Output:
+Output pdf watermark:
 
 ![Alt text](../../blob/develop/sample-output.png?raw=true "Sample output")
