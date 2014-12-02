@@ -93,14 +93,14 @@ public class IWas {
             for( Stamp stamp: stamps ){
                 switch( stamp.getType() ){
                     case DATAMATRIX:
-                        content = stamper.getUnderContent(1); // first page
+                        content = stamper.getOverContent(1); // first page
                         Image datamatrix = getDatamatrix(stamp.getCode(), stamp.getDatamatrixHeight(),
                                 stamp.getDatamatrixWidth(), stamp.getDatamatrixScale());
                         datamatrix.setAbsolutePosition(xOffset + stamp.getX(), yOffset + stamp.getY());
                         content.addImage(datamatrix);
                         break;
                     case TEXT:
-                        content = stamper.getUnderContent(1); // first page
+                        content = stamper.getOverContent(1); // first page
                         Phrase phrase = getText(stamp.getCode(), stamp.getFontSize());
                         ColumnText.showTextAligned(content, Element.ALIGN_LEFT, phrase, xOffset + stamp.getX(), yOffset + stamp.getY(), 0);
                         break;
