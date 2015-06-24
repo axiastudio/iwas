@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class IWas {
     private PdfReader reader = null;
     private PdfStamper stamper = null;
     private List<Stamp> stamps = new ArrayList<>();
+    private Collection<Integer> pages = null;
     private Float xOffset = 0f;
     private Float yOffset = 0f;
     private Float xPosition = 0f;
@@ -46,6 +48,16 @@ public class IWas {
         yOffset = y;
         return this;
     }
+    /**
+     * Sets the pages for the stamp
+     *
+     * @param pages List of pages
+     *
+     */
+    public IWas pages(Collection<Integer> pages){
+        this.pages = pages;
+        return this;
+    }
 
     /**
      * Stamp a Datamatrix
@@ -63,7 +75,7 @@ public class IWas {
         return this;
     }
     public IWas datamatrix(String code, Float x, Float y, Float scale) {
-        return datamatrix(code, DatamatrixSize._20x20, x, y, 1f);
+        return datamatrix(code, DatamatrixSize._20x20, x, y, scale);
     }
     public IWas datamatrix(String code, Float x, Float y) {
         return datamatrix(code, DatamatrixSize._20x20, x, y, 1f);
@@ -75,35 +87,47 @@ public class IWas {
      * @param text The text
      *
      */
-    public IWas text(String text, Integer size, Float x, Float y) {
+    public IWas text(String text, Integer size, Float x, Float y, Float rotation) {
         Stamp stamp = new Stamp(text, StampType.TEXT);
         stamp.setPosition(x, y);
         stamp.setFontiSize(size);
+        stamp.setRotation(rotation);
         stamps.add(stamp);
         return this;
     }
+    public IWas text(String text, Integer size, Float x, Float y) {
+        return text(text, size, x, y, 0f);
+    }
     public IWas text(String text) {
-        return text(text, 24, 0f, 0f);
+        return text(text, 24, 0f, 0f, 0f);
     }
 
     public Boolean toStream(OutputStream outputStream) throws IOException {
         try {
             stamper = new PdfStamper(reader, outputStream);
-            PdfContentByte content;
-            for( Stamp stamp: stamps ){
-                switch( stamp.getType() ){
-                    case DATAMATRIX:
-                        content = stamper.getOverContent(1); // first page
-                        Image datamatrix = getDatamatrix(stamp.getCode(), stamp.getDatamatrixHeight(),
-                                stamp.getDatamatrixWidth(), stamp.getDatamatrixScale());
-                        datamatrix.setAbsolutePosition(xOffset + stamp.getX(), yOffset + stamp.getY());
-                        content.addImage(datamatrix);
-                        break;
-                    case TEXT:
-                        content = stamper.getOverContent(1); // first page
-                        Phrase phrase = getText(stamp.getCode(), stamp.getFontSize());
-                        ColumnText.showTextAligned(content, Element.ALIGN_LEFT, phrase, xOffset + stamp.getX(), yOffset + stamp.getY(), 0);
-                        break;
+            Integer i=0;
+            while( true ){
+                i++;
+                if( pages != null && !pages.contains(i) ){
+                    break;
+                }
+                PdfContentByte content = stamper.getOverContent(i);
+                if( content == null ){
+                    break;
+                }
+                for( Stamp stamp: stamps ){
+                    switch( stamp.getType() ){
+                        case DATAMATRIX:
+                            Image datamatrix = getDatamatrix(stamp.getCode(), stamp.getDatamatrixHeight(),
+                                    stamp.getDatamatrixWidth(), stamp.getDatamatrixScale());
+                            datamatrix.setAbsolutePosition(xOffset + stamp.getX(), yOffset + stamp.getY());
+                            content.addImage(datamatrix);
+                            break;
+                        case TEXT:
+                            Phrase phrase = getText(stamp.getCode(), stamp.getFontSize());
+                            ColumnText.showTextAligned(content, Element.ALIGN_LEFT, phrase, xOffset + stamp.getX(), yOffset + stamp.getY(), stamp.getRotation());
+                            break;
+                    }
                 }
             }
             stamper.close();

@@ -10,6 +10,8 @@ import org.junit.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -29,6 +31,10 @@ public class IWasTest {
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(INPUT_FILE));
         document.open();
         document.add(new Paragraph("Hi there! I'm a test pdf!"));
+        document.newPage();
+        document.add(new Paragraph("And I'm the second page!"));
+        document.newPage();
+        document.add(new Paragraph("Fine. That's all folks."));
         document.close();
     }
 
@@ -37,6 +43,7 @@ public class IWasTest {
 
         IWas.create()
                 .load(new FileInputStream(INPUT_FILE))
+                .pages(new ArrayList<>(Arrays.asList(1, 2)))
                 .offset(30f, 700f)
                 .text("COMUNE", 10, 0f, 42f)
                 .text("di Mori", 10, 0f, 34f)
@@ -44,6 +51,7 @@ public class IWasTest {
                 .text("201300007719", 10, 0f, 16f)
                 .text("04-04-13 08:11", 8, 0f, 8f)
                 .text("f_728", 8, 0f, 0f)
+                .text("rotation", 12, -2f, 0f, 90f)
                 .datamatrix("c_f728#201300007719#673dfc1792", DatamatrixSize._22x22, 75f, 15f, 1.6f)
                 .toStream(new FileOutputStream(OUTPUT_FILE));
 

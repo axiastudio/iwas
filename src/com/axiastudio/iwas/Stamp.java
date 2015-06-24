@@ -14,6 +14,7 @@ public class Stamp {
     private Integer fontSize = 24;
     private Float x = 0f;
     private Float y = 0f;
+    private Float rotation = 0f;
 
     public Stamp(String code) {
         this.code = code;
@@ -39,6 +40,10 @@ public class Stamp {
     public void setPosition(Float x, Float y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setRotation(Float rotation) {
+        this.rotation = rotation;
     }
 
     public String getCode() {
@@ -76,5 +81,9 @@ public class Stamp {
     }
     public Float getY() {
         return y;
+    }
+
+    public Float getRotation() {
+        return rotation;
     }
 }
